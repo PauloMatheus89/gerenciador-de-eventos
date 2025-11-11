@@ -22,6 +22,115 @@ namespace GerenciadorEventos.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("GerenciadorEventos.Domain.Models.Entities.Activity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DayId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DayId");
+
+                    b.ToTable("Activities");
+                });
+
+            modelBuilder.Entity("GerenciadorEventos.Domain.Models.Entities.Day", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("OpeningTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.ToTable("Days");
+                });
+
+            modelBuilder.Entity("GerenciadorEventos.Domain.Models.Entities.Favorite", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Favorites");
+                });
+
+            modelBuilder.Entity("GerenciadorEventos.Domain.Models.Entities.Participant", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Participants");
+                });
+
             modelBuilder.Entity("GerenciadorEventos.Models.Address", b =>
                 {
                     b.Property<int>("Id")
@@ -39,11 +148,20 @@ namespace GerenciadorEventos.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("Neighborhood")
-                        .HasMaxLength(100)
+                    b.Property<int>("EventId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Neighborhood")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<int>("Number")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrganizerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("State")
                         .HasColumnType("int");
 
                     b.Property<string>("StreetName")
@@ -52,6 +170,13 @@ namespace GerenciadorEventos.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EventId")
+                        .IsUnique();
+
+                    b.HasIndex("OrganizerId")
+                        .IsUnique()
+                        .HasFilter("[OrganizerId] IS NOT NULL");
 
                     b.ToTable("Addresses");
                 });
@@ -84,9 +209,6 @@ namespace GerenciadorEventos.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AddressId")
-                        .HasColumnType("int");
-
                     b.Property<int>("AvaiableVacancies")
                         .HasColumnType("int");
 
@@ -117,9 +239,6 @@ namespace GerenciadorEventos.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AddressId")
-                        .IsUnique();
 
                     b.HasIndex("CategoryId");
 
@@ -155,7 +274,8 @@ namespace GerenciadorEventos.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.HasIndex("PaymentId");
+                    b.HasIndex("PaymentId")
+                        .IsUnique();
 
                     b.HasIndex("UserId");
 
@@ -170,16 +290,13 @@ namespace GerenciadorEventos.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AddressId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ComporateName")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<string>("CorporateEmail")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CorporateName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -192,9 +309,6 @@ namespace GerenciadorEventos.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AddressId")
-                        .IsUnique();
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -219,10 +333,15 @@ namespace GerenciadorEventos.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.Property<double>("Value")
                         .HasColumnType("float");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Payments");
                 });
@@ -267,27 +386,89 @@ namespace GerenciadorEventos.Migrations
                         });
                 });
 
-            modelBuilder.Entity("GerenciadorEventos.Models.Event", b =>
+            modelBuilder.Entity("GerenciadorEventos.Domain.Models.Entities.Activity", b =>
                 {
-                    b.HasOne("GerenciadorEventos.Models.Address", "Address")
-                        .WithOne("Event")
-                        .HasForeignKey("GerenciadorEventos.Models.Event", "AddressId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("GerenciadorEventos.Domain.Models.Entities.Day", "Day")
+                        .WithMany("Activities")
+                        .HasForeignKey("DayId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GerenciadorEventos.Models.Category", "Category")
-                        .WithMany("Events")
-                        .HasForeignKey("CategoryId")
+                    b.Navigation("Day");
+                });
+
+            modelBuilder.Entity("GerenciadorEventos.Domain.Models.Entities.Day", b =>
+                {
+                    b.HasOne("GerenciadorEventos.Models.Event", "Event")
+                        .WithMany("Days")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+                });
+
+            modelBuilder.Entity("GerenciadorEventos.Domain.Models.Entities.Favorite", b =>
+                {
+                    b.HasOne("GerenciadorEventos.Models.Event", "Event")
+                        .WithMany("Favorites")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("GerenciadorEventos.Models.User", "User")
+                        .WithMany("Favorites")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("GerenciadorEventos.Domain.Models.Entities.Participant", b =>
+                {
+                    b.HasOne("GerenciadorEventos.Models.User", "User")
+                        .WithOne("Participant")
+                        .HasForeignKey("GerenciadorEventos.Domain.Models.Entities.Participant", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("GerenciadorEventos.Models.Address", b =>
+                {
+                    b.HasOne("GerenciadorEventos.Models.Event", "Event")
+                        .WithOne("Address")
+                        .HasForeignKey("GerenciadorEventos.Models.Address", "EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("GerenciadorEventos.Models.Organizer", "Organizer")
-                        .WithMany("Event")
-                        .HasForeignKey("OrganizerId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .WithOne("Address")
+                        .HasForeignKey("GerenciadorEventos.Models.Address", "OrganizerId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Event");
+
+                    b.Navigation("Organizer");
+                });
+
+            modelBuilder.Entity("GerenciadorEventos.Models.Event", b =>
+                {
+                    b.HasOne("GerenciadorEventos.Models.Category", "Category")
+                        .WithMany("Events")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Address");
+                    b.HasOne("GerenciadorEventos.Models.Organizer", "Organizer")
+                        .WithMany("Events")
+                        .HasForeignKey("OrganizerId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
 
                     b.Navigation("Category");
 
@@ -299,19 +480,19 @@ namespace GerenciadorEventos.Migrations
                     b.HasOne("GerenciadorEventos.Models.Event", "Event")
                         .WithMany("Inscriptions")
                         .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("GerenciadorEventos.Models.Payment", "Payment")
-                        .WithMany("Inscriptions")
-                        .HasForeignKey("PaymentId")
+                        .WithOne("Inscription")
+                        .HasForeignKey("GerenciadorEventos.Models.Inscription", "PaymentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("GerenciadorEventos.Models.User", "User")
                         .WithMany("Inscriptions")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Event");
@@ -323,28 +504,29 @@ namespace GerenciadorEventos.Migrations
 
             modelBuilder.Entity("GerenciadorEventos.Models.Organizer", b =>
                 {
-                    b.HasOne("GerenciadorEventos.Models.Address", "Address")
-                        .WithOne("Organizer")
-                        .HasForeignKey("GerenciadorEventos.Models.Organizer", "AddressId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("GerenciadorEventos.Models.User", "User")
                         .WithOne("Organizer")
                         .HasForeignKey("GerenciadorEventos.Models.Organizer", "UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
-
-                    b.Navigation("Address");
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("GerenciadorEventos.Models.Address", b =>
+            modelBuilder.Entity("GerenciadorEventos.Models.Payment", b =>
                 {
-                    b.Navigation("Event");
+                    b.HasOne("GerenciadorEventos.Models.User", "User")
+                        .WithMany("Payments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Organizer");
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("GerenciadorEventos.Domain.Models.Entities.Day", b =>
+                {
+                    b.Navigation("Activities");
                 });
 
             modelBuilder.Entity("GerenciadorEventos.Models.Category", b =>
@@ -354,24 +536,40 @@ namespace GerenciadorEventos.Migrations
 
             modelBuilder.Entity("GerenciadorEventos.Models.Event", b =>
                 {
+                    b.Navigation("Address")
+                        .IsRequired();
+
+                    b.Navigation("Days");
+
+                    b.Navigation("Favorites");
+
                     b.Navigation("Inscriptions");
                 });
 
             modelBuilder.Entity("GerenciadorEventos.Models.Organizer", b =>
                 {
-                    b.Navigation("Event");
+                    b.Navigation("Address");
+
+                    b.Navigation("Events");
                 });
 
             modelBuilder.Entity("GerenciadorEventos.Models.Payment", b =>
                 {
-                    b.Navigation("Inscriptions");
+                    b.Navigation("Inscription")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("GerenciadorEventos.Models.User", b =>
                 {
+                    b.Navigation("Favorites");
+
                     b.Navigation("Inscriptions");
 
                     b.Navigation("Organizer");
+
+                    b.Navigation("Participant");
+
+                    b.Navigation("Payments");
                 });
 #pragma warning restore 612, 618
         }

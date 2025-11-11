@@ -17,6 +17,7 @@ namespace GerenciadorEventos.Models.Services
             _userRepository = userRepository;
         }
 
+        //TODO : Adcionar Codigo para deletar inscrição quando User for Deletado
         public void AddUser(User user)
         {
             if (user == null)
@@ -78,6 +79,8 @@ namespace GerenciadorEventos.Models.Services
 
             if (user.Inscriptions.Any())
                 throw new InvalidOperationException("Não é possível excluir um usuário com inscrições ativas.");
+
+            
 
             _userRepository.Update(id, user);
         }
