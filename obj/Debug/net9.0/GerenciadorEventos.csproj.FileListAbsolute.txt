@@ -158,3 +158,4 @@ C:\GerenciadorEventos\obj\Debug\net9.0\refint\GerenciadorEventos.dll
 C:\GerenciadorEventos\obj\Debug\net9.0\GerenciadorEventos.pdb
 C:\GerenciadorEventos\obj\Debug\net9.0\GerenciadorEventos.genruntimeconfig.cache
 C:\GerenciadorEventos\obj\Debug\net9.0\ref\GerenciadorEventos.dll
+C:\GerenciadorEventos\obj\Debug\net9.0\GerenciadorEventos.sourcelink.json

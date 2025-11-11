@@ -18,6 +18,6 @@ namespace GerenciadorEventos.Models
         [Required]
         public string? Description { get; set; }
 
-        public ICollection<Event>? Events { get; set; }
+        public ICollection<Event> Events { get; set; } = new List<Event>();
     }
 }

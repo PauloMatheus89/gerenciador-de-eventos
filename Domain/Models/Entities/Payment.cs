@@ -6,10 +6,11 @@ using System.Linq;
 using System.Security.AccessControl;
 using System.Threading.Tasks;
 using GerenciadorEventos.Enums;
+using GerenciadorEventos.Interfaces.IEntities;
 
 namespace GerenciadorEventos.Models
 {
-    public class Payment
+    public class Payment : IEntityWithUser
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -21,10 +22,14 @@ namespace GerenciadorEventos.Models
         public DateTime PaymentDate { get; set; }
         [Required]
         public PaymentMethod PaymentMethod { get; set; }
+        [Required]
         public Status Status { get; set; }
+        [ForeignKey("User")]
+        public int UserId { get; set; }
 
         //Navigation Properties
-        public ICollection<Inscription> Inscriptions { get; set; } = new List<Inscription>();
+        public User User { get; set; } = null!;
+        public Inscription Inscription { get; set; } = null!;
 
     }
 }

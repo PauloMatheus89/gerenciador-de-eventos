@@ -12,5 +12,7 @@ namespace GerenciadorEventos.Interfaces.IRepository
         void Update(int id,Event @event);
         void Remove(Event @event);
         Event GetById(int id);
+
+        IEnumerable<Event> GetAllEvents();
     }
 }

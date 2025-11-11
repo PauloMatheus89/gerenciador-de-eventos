@@ -12,5 +12,7 @@ namespace GerenciadorEventos.Interfaces.IService
         void RemoveEvent(Event var);
         void UpdateEvent(int id,Event var);
         Event? GetById(int eventId);
+
+        IEnumerable<Event> GetAllEvents();
     }
 }

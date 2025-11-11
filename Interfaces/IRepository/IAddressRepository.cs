@@ -11,7 +11,9 @@ namespace GerenciadorEventos.Interfaces.IRepository
         void Create(Address address);
         void Update(int id, Address address);
         void Remove(Address address);
-        Address GetById(int id);
+        Address? GetById(int id);
+
+        IEnumerable<Address> GetAllAddresses();
         
     }
 }

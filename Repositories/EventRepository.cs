@@ -46,7 +46,7 @@ namespace GerenciadorEventos.Repositories
             _context.SaveChanges();
         }
 
-        public void Update(int id,Event @event)
+        public void Update(int id, Event @event)
         {
             var updateEvent = _context.Events
             .Include(e => e.Address)
@@ -57,20 +57,11 @@ namespace GerenciadorEventos.Repositories
 
             if (updateEvent != null)
             {
-                if (@event.AddressId != 0 && updateEvent.AddressId != @event.AddressId)
-                {
-                    var newAddress = _context.Addresses.Find(@event.AddressId);
-                    if(newAddress != null)
-                    {
-                        updateEvent.AddressId = @event.AddressId;
-                        updateEvent.Address = newAddress;
-                    }
-                }
 
                 if (updateEvent.CategoryId != 0 && updateEvent.CategoryId != @event.CategoryId)
                 {
                     var newCategory = _context.Categories.Find(@event.CategoryId);
-                    if(newCategory != null)
+                    if (newCategory != null)
                     {
                         updateEvent.CategoryId = @event.CategoryId;
                         updateEvent.Category = newCategory;
@@ -80,12 +71,12 @@ namespace GerenciadorEventos.Repositories
                 if (updateEvent.OrganizerId != 0 && updateEvent.OrganizerId != @event.OrganizerId)
                 {
                     var newOrganizer = _context.Organizers.Find(@event.OrganizerId);
-                    if(newOrganizer != null)
+                    if (newOrganizer != null)
                     {
                         updateEvent.OrganizerId = @event.OrganizerId;
                         updateEvent.Organizer = newOrganizer;
                     }
-                }  
+                }
 
                 updateEvent.Title = @event.Title;
                 updateEvent.StartingDate = @event.StartingDate; //Verificar se o dia atual ja não é data de inicio
@@ -97,6 +88,15 @@ namespace GerenciadorEventos.Repositories
 
                 _context.SaveChanges();
             }
+        }
+        
+        public IEnumerable<Event> GetAllEvents()
+        {
+            return _context.Events
+                    .Include(e => e.Address)
+                    .Include(e => e.Category)
+                    .Include(e => e.Organizer)
+                    .ToList();
         }
     }
 }
