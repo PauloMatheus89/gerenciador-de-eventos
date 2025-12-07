@@ -13,8 +13,10 @@ namespace GerenciadorEventos.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+
         [Required]
-        public CategoryName? Name { get; set; }
+        public CategoryName Name { get; set; }
+        
         [Required]
         public string? Description { get; set; }
 

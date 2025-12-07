@@ -2,18 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GerenciadorEventos.Domain.Models.DTOs;
+using GerenciadorEventos.Domain.Models.DTOs.UserDTOs;
 using GerenciadorEventos.Models;
 
 namespace GerenciadorEventos.Interfaces.IService
 {
     public interface IUserService
     {
-        void AddUser(User user);
-        void RemoveUser(User user);
-        void UpdateUser(int id,User user);
-        User? GetById(int userId);
-        bool VerifyPassword(int userId, string password);
-        void ResetPassord(int userId, string password, string newPassword);
-        bool ExistsByEmail(string email);
+        Task<User> AddUser(UserCreateDto dto);
+        Task<User> RemoveUserAsync(string id);
+        Task<User> UpdateUser(string id,UserUpdateDTO userDto);
+        Task<User?> GetById(string userId);
+        Task<bool> VerifyPassword(string userId, string password);
+        void ResetPassord(string userId, string password, string newPassword);
+        Task<bool> ExistsByEmail(string email);
+        Task<bool> UserExists(string id);
     }
 }

@@ -10,7 +10,7 @@ using GerenciadorEventos.Interfaces.IEntities;
 
 namespace GerenciadorEventos.Models
 {
-    public class Payment : IEntityWithUser
+    public class Payment : IEntityWithUser<int>
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

@@ -2,6 +2,6 @@ namespace GerenciadorEventos.Enums
 {
     public enum Role
     {
-        Client, Organizer
+        Client = 0, Organizer =1
     }
 }

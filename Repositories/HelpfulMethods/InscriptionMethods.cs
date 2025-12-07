@@ -57,7 +57,7 @@ namespace GerenciadorEventos.Repositories.HelpfulMethods
 
                     // Atualiza chaves estrangeiras
                     EventMethods.UpdateEventId(context, inscriptionToUpdate, inscription);
-                    UserMethods.UpdateUserId(context, inscriptionToUpdate, inscription);
+                    UserMethods.UpdateUserId<Inscription,int>(context, inscriptionToUpdate, inscription);
                     PaymentMethods.UpdatePaymentId(context, inscriptionToUpdate, inscription);
 
                     

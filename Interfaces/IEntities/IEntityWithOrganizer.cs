@@ -8,7 +8,7 @@ namespace GerenciadorEventos.Interfaces.IEntities
 {
     public interface IEntityWithOrganizer
     {
-        int? OrganizerId { get; set; }
-        Organizer? Organizer { get; set; }
+        int OrganizerId { get; set; }
+        Organizer Organizer { get; set; }
     }
 }

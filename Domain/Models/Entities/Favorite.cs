@@ -9,7 +9,7 @@ using GerenciadorEventos.Models;
 
 namespace GerenciadorEventos.Domain.Models.Entities
 {
-    public class Favorite : IEntityWithUser
+    public class Favorite : IEntityWithUser<int?>
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -19,11 +19,12 @@ namespace GerenciadorEventos.Domain.Models.Entities
         public int EventId { get; set; }
 
         [ForeignKey("User")]
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
 
         //Navigation Properties
         public Event Event { get; set; } = null!;
-
         public User User { get; set; } = null!;
+
+        public List<EventFavorite> EventFavorites { get; set; } = new List<EventFavorite>();
     }
 }

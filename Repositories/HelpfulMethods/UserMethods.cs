@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GerenciadorEventos.Domain.Models.DTOs;
 using GerenciadorEventos.Infrastructure.Databases;
 using GerenciadorEventos.Interfaces.IEntities;
 using GerenciadorEventos.Models;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 
 namespace GerenciadorEventos.Repositories.HelpfulMethods
 {
@@ -18,14 +20,23 @@ namespace GerenciadorEventos.Repositories.HelpfulMethods
             return false;
         }
 
-        public static bool UserIdIsDifferent<T>(T entityToUpdate, T entity) where T : IEntityWithUser
+        public static bool UserExists(DatabaseContext context, UserDto userDto)
         {
-            return entityToUpdate.UserId != 0 && entityToUpdate.UserId != entity.UserId;
+            if (userDto != null && context.Users.Any(a => a.Email == userDto.Email))
+                return true;
+
+            return false;
         }
 
-        public static void UpdateUserId<T>(DatabaseContext context, T entityToUpdate, T entity) where T : IEntityWithUser
+        public static bool UserIdIsDifferent<TEntity, TUserId>(TEntity entityToUpdate,TEntity entity) where TEntity : IEntityWithUser<TUserId>
         {
-            if (UserIdIsDifferent(entityToUpdate, entity))
+            return !EqualityComparer<TUserId>.Default.Equals(entityToUpdate.UserId, default)
+                && !EqualityComparer<TUserId>.Default.Equals(entityToUpdate.UserId, entity.UserId);
+        }
+
+        public static void UpdateUserId<TEntity, TUserId>(DatabaseContext context,TEntity entityToUpdate,TEntity entity) where TEntity : IEntityWithUser<TUserId>
+        {
+            if (UserIdIsDifferent<TEntity, TUserId>(entityToUpdate, entity))
             {
                 var newUser = context.Users.Find(entity.UserId);
                 if (newUser == null)
@@ -58,5 +69,41 @@ namespace GerenciadorEventos.Repositories.HelpfulMethods
                     context.Users.Attach(user);
             }
         }
+
+        public static void UpdateUserBase(DatabaseContext context, UserDto? userDto, User? userToUpdate)
+        {
+            if (userDto != null && userToUpdate != null)
+            {
+                userToUpdate.Email = userDto.Email;
+                userToUpdate.Password = userDto.Password;
+                userToUpdate.Username = userDto.Username;
+                userToUpdate.Role = userDto.Role;
+            }
+            else if (userToUpdate == null && userDto != null)
+            {
+                if (UserExists(context, userDto))
+                {
+                    var user = context.Users.FirstOrDefault(e => e.Email == userDto.Email);
+                    context.Users.Attach(user!);
+                }
+            }
+        }
+
+        public static User CreateUser(DatabaseContext context, UserDto userDto)
+        {
+            var user = new User()
+            {
+                Username = userDto.Username,
+                Password = userDto.Password,
+                Email = userDto.Email,
+                Role = userDto.Role,
+            };
+
+            context.Users.Add(user);
+
+            return user;
+        }
+
+        
     }
 }

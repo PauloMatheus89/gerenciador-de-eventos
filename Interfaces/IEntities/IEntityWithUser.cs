@@ -6,9 +6,9 @@ using GerenciadorEventos.Models;
 
 namespace GerenciadorEventos.Interfaces.IEntities
 {
-    public interface IEntityWithUser
+    public interface IEntityWithUser<TUserId>
     {
-        int UserId { get; set; }
+        TUserId UserId { get; set; }
         User User { get; set; }
     }
 }

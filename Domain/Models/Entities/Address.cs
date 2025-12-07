@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using GerenciadorEventos.Domain.Models.Entities;
 using GerenciadorEventos.Domain.Models.Enums;
 using GerenciadorEventos.Interfaces.IEntities;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace GerenciadorEventos.Models
 {
@@ -28,25 +29,28 @@ namespace GerenciadorEventos.Models
         [RegularExpression(@"^\d{5}-?\d{3}$", ErrorMessage = "Invalid {0}")]
         public string? CEP { get; set; }
         
+        [Required]
         [StringLength(100, ErrorMessage = "{0} is too big")]
         [Display(Name = "Street Name")]
-        [Required]
         public string? StreetName { get; set; }
         
         [Required]
         public int Number { get; set; }
         
+        [Required]
         [StringLength(100, ErrorMessage = "{0} is too big")]
         public string? Neighborhood { get; set; }
 
+        [ValidateNever]
         [ForeignKey("Day")]
         public int DayId { get; set; }
 
+        [ValidateNever]
         [ForeignKey("Organizer")]
-        public int? OrganizerId{ get; set; }
+        public int OrganizerId{ get; set; }
 
         //Navigation Property
-        public Organizer? Organizer { get; set; } = null!;
+        public Organizer Organizer { get; set; } = null!;
         public Day Day { get; set; } = null!;
         
     }

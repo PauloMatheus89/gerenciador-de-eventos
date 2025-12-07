@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace GerenciadorEventos.Migrations
 {
     /// <inheritdoc />
-    public partial class RefactoringDatabase : Migration
+    public partial class CreatingDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -139,44 +139,14 @@ namespace GerenciadorEventos.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Addresses",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CityName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    State = table.Column<int>(type: "int", nullable: false),
-                    CEP = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StreetName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Number = table.Column<int>(type: "int", nullable: false),
-                    Neighborhood = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    EventId = table.Column<int>(type: "int", nullable: false),
-                    OrganizerId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Addresses", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Addresses_Events_EventId",
-                        column: x => x.EventId,
-                        principalTable: "Events",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Addresses_Organizers_OrganizerId",
-                        column: x => x.OrganizerId,
-                        principalTable: "Organizers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Days",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    OpeningTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    OpeningTime = table.Column<TimeSpan>(type: "time", nullable: false),
+                    ClosingTime = table.Column<TimeSpan>(type: "time", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     EventId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -207,13 +177,13 @@ namespace GerenciadorEventos.Migrations
                         name: "FK_Favorites_Events_EventId",
                         column: x => x.EventId,
                         principalTable: "Events",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Favorites_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -256,8 +226,8 @@ namespace GerenciadorEventos.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
-                    EndTime = table.Column<TimeOnly>(type: "time", nullable: false),
+                    StartTime = table.Column<TimeSpan>(type: "time", nullable: false),
+                    EndTime = table.Column<TimeSpan>(type: "time", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DayId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -272,6 +242,61 @@ namespace GerenciadorEventos.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Addresses",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CityName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    State = table.Column<int>(type: "int", nullable: false),
+                    CEP = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StreetName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Number = table.Column<int>(type: "int", nullable: false),
+                    Neighborhood = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    DayId = table.Column<int>(type: "int", nullable: false),
+                    OrganizerId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Addresses", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Addresses_Days_DayId",
+                        column: x => x.DayId,
+                        principalTable: "Days",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Addresses_Organizers_OrganizerId",
+                        column: x => x.OrganizerId,
+                        principalTable: "Organizers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EventFavorites",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EventId = table.Column<int>(type: "int", nullable: false),
+                    FavoriteId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EventFavorites", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EventFavorites_Events_EventId",
+                        column: x => x.EventId,
+                        principalTable: "Events",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_EventFavorites_Favorites_FavoriteId",
+                        column: x => x.FavoriteId,
+                        principalTable: "Favorites",
+                        principalColumn: "Id");
+                });
+
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Email", "Password", "Role", "Username" },
@@ -283,22 +308,31 @@ namespace GerenciadorEventos.Migrations
                 column: "DayId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Addresses_EventId",
+                name: "IX_Addresses_DayId",
                 table: "Addresses",
-                column: "EventId",
+                column: "DayId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Addresses_OrganizerId",
                 table: "Addresses",
                 column: "OrganizerId",
-                unique: true,
-                filter: "[OrganizerId] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Days_EventId",
                 table: "Days",
                 column: "EventId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EventFavorites_EventId",
+                table: "EventFavorites",
+                column: "EventId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EventFavorites_FavoriteId",
+                table: "EventFavorites",
+                column: "FavoriteId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Events_CategoryId",
@@ -364,7 +398,7 @@ namespace GerenciadorEventos.Migrations
                 name: "Addresses");
 
             migrationBuilder.DropTable(
-                name: "Favorites");
+                name: "EventFavorites");
 
             migrationBuilder.DropTable(
                 name: "Inscriptions");
@@ -374,6 +408,9 @@ namespace GerenciadorEventos.Migrations
 
             migrationBuilder.DropTable(
                 name: "Days");
+
+            migrationBuilder.DropTable(
+                name: "Favorites");
 
             migrationBuilder.DropTable(
                 name: "Payments");

@@ -23,7 +23,7 @@ namespace GerenciadorEventos.Repositories.HelpfulMethods
             {
                 participantToUpdate.Name = participant.Name;
                 participantToUpdate.Email = participant.Email;
-                UserMethods.UpdateUserId(context, participantToUpdate, participant);
+                UserMethods.UpdateUserId<Participant,int>(context, participantToUpdate, participant);
 
             }
             else if (participantToUpdate == null && participant != null)
