@@ -8,9 +8,10 @@ namespace GerenciadorEventos.Interfaces.IRepository
 {
     public interface IInscriptionRepository
     {
-        void Create(Inscription inscription);
-        void Remove(Inscription inscription);
-        void Update(int id, Inscription inscription);
-        Inscription GetById(int id);
+        Task<Inscription> Create(Inscription inscription);
+        Task<Inscription> Remove(Inscription inscription);
+        Task<Inscription> Update(Inscription inscriptionToUpdate, Inscription inscription);
+        Task<Inscription?> GetById(int id);
+        Task<IEnumerable<Inscription>> GetAllInscriptions();
     }
 }

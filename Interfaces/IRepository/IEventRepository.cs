@@ -2,17 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GerenciadorEventos.Domain.Models.DTOs;
 using GerenciadorEventos.Models;
 
 namespace GerenciadorEventos.Interfaces.IRepository
 {
     public interface IEventRepository
     {
-        void Create(Event @event);
-        void Update(int id,Event @event);
-        void Remove(Event @event);
-        Event GetById(int id);
-
-        IEnumerable<Event> GetAllEvents();
+        Task<Event> Create(Event @event);
+        Task<Event> Update(Event eventToUpdate,Event newEvent);
+        Task<Event> Remove(Event @event);
+        Task<Event?> GetById(int id);
+        Task<IEnumerable<Event>> GetAllEvents();
+        IQueryable<Event> Query();
+        Task<bool> EventExists(int id);
     }
 }

@@ -9,7 +9,7 @@ using GerenciadorEventos.Models;
 
 namespace GerenciadorEventos.Domain.Models.Entities
 {
-    public class Participant : IEntityWithUser
+    public class Participant : IEntityWithUser<int>
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

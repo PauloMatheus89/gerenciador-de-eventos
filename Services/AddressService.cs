@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using GerenciadorEventos.Domain.Models.DTOs;
+using GerenciadorEventos.Exceptions;
 using GerenciadorEventos.Interfaces.IRepository;
 using GerenciadorEventos.Interfaces.IService;
 using GerenciadorEventos.Models;
@@ -12,75 +15,105 @@ namespace GerenciadorEventos.Services
     public class AddressService : IAddressService
     {
         private readonly IAddressRepository _addressRepository;
+        private readonly IOrganizerRepository _organizerRepository;
+        //TODO: Adicionar IDayRepository
 
-        public AddressService(IAddressRepository addressRepository)
+        public AddressService(IAddressRepository addressRepository,IOrganizerRepository organizerRepository)
         {
             _addressRepository = addressRepository;
+            _organizerRepository = organizerRepository;
         }
 
-        public void AddAddress(Address address)
+        public async Task<Address> AddAddress(AddressDto addressDto)
         {
-            if (address == null)
+            if (addressDto == null)
             {
                 throw new ArgumentNullException("Address Received is Null");
             }
 
-            _addressRepository.Create(address);
+            if (addressDto.CEP != null && await _addressRepository.CepExists(addressDto.CEP))
+                throw new DuplicateNameException("Error in Create(Address) - This Cep is already being used by other address!");
+
+
+            var newAddress = new Address
+            {
+                CEP = addressDto.CEP,
+                CityName = addressDto.CityName,
+                State = addressDto.State,
+                StreetName = addressDto.StreetName,
+                Number = addressDto.Number,
+                Neighborhood = addressDto.Neighborhood,
+                OrganizerId = addressDto.OrganizerId!.Value, //null forcing
+                DayId = addressDto.DayId!.Value
+
+            };
+
+            var address = await _addressRepository.Create(newAddress);
+
+            return address;
             
         }
 
-        public Address? GetById(int addressId)
+        public async Task<Address?> GetById(int addressId)
         {
-            throw new NotImplementedException();
+            return await _addressRepository.GetById(addressId);
+        } 
+
+        public async Task<Address> RemoveAddress(int id)
+        {
+            var addressToDelete = await _addressRepository.GetById(id);
+
+            if (addressToDelete == null)
+                throw new KeyNotFoundException("Error in Demove(Address) - Could not find a Key to delete");
+
+            if (await _organizerRepository.GetByid(addressToDelete.OrganizerId) != null)
+                throw new ActiveOrganizerException();
+
+            var address = await _addressRepository.Remove(addressToDelete);
+
+            return address;
         }
 
-        public void RemoveAddress(Address address)
+        public async Task<Address> UpdateAddress(int id, AddressDto addressDto)
         {
-            if (address == null)
+            var addressToUpdate = await _addressRepository.GetById(id);
+
+            if (addressDto == null)
             {
-                throw new ArgumentNullException("Address received is null");
+                throw new ArgumentNullException("Error in Update(Address) - Address received is null");
             }
 
-            _addressRepository.Remove(address);
+            if (addressToUpdate == null)
+                throw new KeyNotFoundException("Could not find an Address related to that Id");
+
+            if (addressDto.CEP != addressToUpdate.CEP && await _addressRepository.CepExists(addressDto.CEP!))
+            {
+                throw new DuplicateNameException($"Error in Update(Address) - The Cep {addressDto.CEP} is already being used by other address!");
+            }
+
+            var newAddress = new Address
+            {
+                CityName = addressDto.CityName,
+                State = addressDto.State,
+                Number = addressDto.Number,
+                Neighborhood = addressDto.Neighborhood,
+                StreetName = addressDto.StreetName,
+                CEP = addressDto.CEP
+            };
+
+            var address = await _addressRepository.Update(addressToUpdate, newAddress);
+
+            return address;
         }
 
-        public void UpdateAddress(int id, Address address)
+        //TODO Metodo para atualizar OrganizerId
+        
+        public async Task<IEnumerable<Address>> GetAddresses()
         {
-            if (address == null)
-            {
-                throw new ArgumentNullException("Address received is null");
-            }
-
-            if (verifyDuplicatedAddress(address))
-            {
-                throw new ArgumentException("This Address Register already exists");
-            }
-
-            _addressRepository.Update(id, address);
+            return await _addressRepository.GetAllAddresses();
         }
 
-        private bool verifyDuplicatedAddress(Address address)
-        {
-            var allAddresses = _addressRepository.GetAllAddresses();
 
-            var normalizedCityName = NormalizeString(address.CityName!);
-            var normalizedCEP = NormalizeString(address.CEP!);
-            var normalizedStreetName = NormalizeString(address.StreetName!);
-            var normalizedNeighborhood = NormalizeString(address.Neighborhood!);
-
-            if (allAddresses.Any(a =>
-                NormalizeString(a.CityName) == normalizedCityName &&
-                NormalizeString(a.CEP) == normalizedCEP &&
-                NormalizeString(a.StreetName) == normalizedStreetName &&
-                NormalizeString(a.Neighborhood) == normalizedNeighborhood &&
-                a.Number == address.Number
-                ))
-            {
-                return true;
-            }
-
-            return false;
-        }
         
         private string NormalizeString(string? word)
         {

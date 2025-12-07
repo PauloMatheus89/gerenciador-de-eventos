@@ -21,10 +21,10 @@ namespace GerenciadorEventos.Domain.Models.Entities
         public string? Title { get; set; }
 
         [Required]
-        public TimeOnly StartTime { get; set; }
+        public TimeSpan StartTime { get; set; }
 
         [Required]
-        public TimeOnly EndTime { get; set; }
+        public TimeSpan EndTime { get; set; }
 
         public string? Description { get; set; }
 

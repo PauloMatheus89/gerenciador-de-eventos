@@ -36,10 +36,10 @@ namespace GerenciadorEventos.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<TimeOnly>("EndTime")
+                    b.Property<TimeSpan>("EndTime")
                         .HasColumnType("time");
 
-                    b.Property<TimeOnly>("StartTime")
+                    b.Property<TimeSpan>("StartTime")
                         .HasColumnType("time");
 
                     b.Property<string>("Title")
@@ -61,6 +61,9 @@ namespace GerenciadorEventos.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<TimeSpan>("ClosingTime")
+                        .HasColumnType("time");
+
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
@@ -70,14 +73,37 @@ namespace GerenciadorEventos.Migrations
                     b.Property<int>("EventId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("OpeningTime")
-                        .HasColumnType("datetime2");
+                    b.Property<TimeSpan>("OpeningTime")
+                        .HasColumnType("time");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EventId");
 
                     b.ToTable("Days");
+                });
+
+            modelBuilder.Entity("GerenciadorEventos.Domain.Models.Entities.EventFavorite", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FavoriteId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("FavoriteId");
+
+                    b.ToTable("EventFavorites");
                 });
 
             modelBuilder.Entity("GerenciadorEventos.Domain.Models.Entities.Favorite", b =>
@@ -148,17 +174,18 @@ namespace GerenciadorEventos.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("EventId")
+                    b.Property<int>("DayId")
                         .HasColumnType("int");
 
                     b.Property<string>("Neighborhood")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("Number")
                         .HasColumnType("int");
 
-                    b.Property<int?>("OrganizerId")
+                    b.Property<int>("OrganizerId")
                         .HasColumnType("int");
 
                     b.Property<int>("State")
@@ -171,12 +198,11 @@ namespace GerenciadorEventos.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EventId")
+                    b.HasIndex("DayId")
                         .IsUnique();
 
                     b.HasIndex("OrganizerId")
-                        .IsUnique()
-                        .HasFilter("[OrganizerId] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("Addresses");
                 });
@@ -408,18 +434,37 @@ namespace GerenciadorEventos.Migrations
                     b.Navigation("Event");
                 });
 
+            modelBuilder.Entity("GerenciadorEventos.Domain.Models.Entities.EventFavorite", b =>
+                {
+                    b.HasOne("GerenciadorEventos.Models.Event", "Event")
+                        .WithMany("EventFavorites")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("GerenciadorEventos.Domain.Models.Entities.Favorite", "Favorite")
+                        .WithMany("EventFavorites")
+                        .HasForeignKey("FavoriteId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("Favorite");
+                });
+
             modelBuilder.Entity("GerenciadorEventos.Domain.Models.Entities.Favorite", b =>
                 {
                     b.HasOne("GerenciadorEventos.Models.Event", "Event")
-                        .WithMany("Favorites")
+                        .WithMany()
                         .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("GerenciadorEventos.Models.User", "User")
                         .WithMany("Favorites")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
                     b.Navigation("Event");
@@ -440,9 +485,9 @@ namespace GerenciadorEventos.Migrations
 
             modelBuilder.Entity("GerenciadorEventos.Models.Address", b =>
                 {
-                    b.HasOne("GerenciadorEventos.Models.Event", "Event")
+                    b.HasOne("GerenciadorEventos.Domain.Models.Entities.Day", "Day")
                         .WithOne("Address")
-                        .HasForeignKey("GerenciadorEventos.Models.Address", "EventId")
+                        .HasForeignKey("GerenciadorEventos.Models.Address", "DayId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -451,7 +496,7 @@ namespace GerenciadorEventos.Migrations
                         .HasForeignKey("GerenciadorEventos.Models.Address", "OrganizerId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.Navigation("Event");
+                    b.Navigation("Day");
 
                     b.Navigation("Organizer");
                 });
@@ -527,6 +572,14 @@ namespace GerenciadorEventos.Migrations
             modelBuilder.Entity("GerenciadorEventos.Domain.Models.Entities.Day", b =>
                 {
                     b.Navigation("Activities");
+
+                    b.Navigation("Address")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("GerenciadorEventos.Domain.Models.Entities.Favorite", b =>
+                {
+                    b.Navigation("EventFavorites");
                 });
 
             modelBuilder.Entity("GerenciadorEventos.Models.Category", b =>
@@ -536,12 +589,9 @@ namespace GerenciadorEventos.Migrations
 
             modelBuilder.Entity("GerenciadorEventos.Models.Event", b =>
                 {
-                    b.Navigation("Address")
-                        .IsRequired();
-
                     b.Navigation("Days");
 
-                    b.Navigation("Favorites");
+                    b.Navigation("EventFavorites");
 
                     b.Navigation("Inscriptions");
                 });

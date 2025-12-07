@@ -6,10 +6,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using GerenciadorEventos.CustomValidations;
 using GerenciadorEventos.Interfaces.IEntities;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace GerenciadorEventos.Models
 {
-    public class Organizer : IEntityWithUser
+    public class Organizer : IEntityWithUser<int>
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -29,14 +30,30 @@ namespace GerenciadorEventos.Models
         [Required]
         [Display(Name = "Corporate Email")]
         [EmailAddress(ErrorMessage = "This {0} is invalid")]
-        
         public string? CorporateEmail { get; set; }
+        
+        [ValidateNever]
         [ForeignKey("User")]
         public int UserId { get; set; }
 
         //Navigation Property
         public User User { get; set; } = null!;
-        public Address? Address { get; set; } 
+        public Address? Address { get; set; }
         public ICollection<Event> Events { get; set; } = new List<Event>();
+
+        public override string ToString()
+        {
+            return
+            $@"Organizer:
+            Id: {Id}
+            Description: {Description ?? "N/A"}
+            Corporate Name: {CorporateName ?? "N/A"}
+            Document: {Document}
+            Corporate Email: {CorporateEmail}
+            UserId: {UserId}
+            Address: {(Address != null ? Address.ToString() : "No Address")}
+            Total Events: {Events?.Count ?? 0}";
+        }
+
     }
 }

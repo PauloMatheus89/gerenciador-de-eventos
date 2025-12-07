@@ -6,39 +6,43 @@ using System.Linq;
 using System.Threading.Tasks;
 using GerenciadorEventos.Domain.Models.Entities;
 using GerenciadorEventos.Enums;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace GerenciadorEventos.Models
 {
-    public class User
+    public class User : IdentityUser
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-        
-        [Required]
-        [StringLength(100, ErrorMessage = "{0} is too long!")]
-        public string? Username { get; set; }
-        
-        [Required]
-        [RegularExpression("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]+$", ErrorMessage = "Invalid Password! It must contain at leat: 1 Letter and 1 Number")]
-        [StringLength(10, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long and maximum 10 characters")]
-        public string? Password { get; set; }
-        
         [Required]
         public Role Role { get; set; }
-        
-        [Required]
-        [EmailAddress(ErrorMessage = "{0} is invalid!")]
-        public string? Email { get; set; }
-        
+
+
         //Navigation Properties
-        
-        public Organizer? Organizer { get; set; } 
+        [ValidateNever]
+        public Organizer? Organizer { get; set; }
+        [ValidateNever]
         public Participant? Participant { get; set; }
+        [ValidateNever]
         public ICollection<Inscription> Inscriptions { get; set; } = new List<Inscription>();
+        [ValidateNever]
         public ICollection<Payment> Payments { get; set; } = new List<Payment>();
-        public ICollection<Favorite> Favorites { get; set; } = null!;
+        [ValidateNever]
+        public ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
         //TO:DO - To String Method
+
+        public override string ToString()
+        {
+            var organizerInfo = Organizer != null ? Organizer.ToString() : "null";
+            
+            return $"User {{ Id = {Id}, Username = {UserName}, Email = {Email}, Role = {Role}, " +
+                $"Organizer = {organizerInfo}, " +
+                $"Participant = {(Participant != null ? Participant.ToString() : "null")}, " +
+                $"Inscriptions = {Inscriptions?.Count ?? 0}, " +
+                $"Payments = {Payments?.Count ?? 0}, " +
+                $"Favorites = {Favorites?.Count ?? 0} }}";
+            }
+
     }
+    
+    
 }

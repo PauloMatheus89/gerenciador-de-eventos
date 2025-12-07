@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using GerenciadorEventos.Domain.Models.DTOs;
 using GerenciadorEventos.Interfaces.IService;
 using GerenciadorEventos.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -23,8 +24,12 @@ namespace GerenciadorEventos.Controllers
         }
 
         [HttpPost("create-organizer")]
-        public IActionResult Create(Organizer organizer)
+        public IActionResult Create([FromQuery]OrganizerDto organizerDto)
         {
+            Console.WriteLine($"DTO recebido pelo binder: {organizerDto.UserId}");
+
+            
+
             if (!ModelState.IsValid)
             {
                 List<string> validationErrors = new List<string>();
@@ -40,13 +45,13 @@ namespace GerenciadorEventos.Controllers
                 return BadRequest(validationErrors);
             }
 
-            _organizerService.AddOrganizer(organizer);
+           var organizer = _organizerService.AddOrganizer(organizerDto);
 
             return Content($"{organizer}");
         }
 
         [HttpDelete("remove-organizer")]
-        public IActionResult Delete(Organizer organizer)
+        public IActionResult Delete(OrganizerDto organizerDto)
         {
             if (!ModelState.IsValid)
             {
@@ -63,13 +68,13 @@ namespace GerenciadorEventos.Controllers
                 return BadRequest(validationErrors);
             }
 
-            _organizerService.RemoveOrganizer(organizer);
+            var organizer = _organizerService.RemoveOrganizer(organizerDto);
 
-            return Content($"Organizer Removed Sucessfully");
+            return Content($"Organizer {organizer} Removed Sucessfully");
         }
 
-        [HttpPut("update-organizer")]
-        public IActionResult Update(int id,Organizer organizer)
+        [HttpPut("update-organizer/{id}")]
+        public IActionResult Update([FromRoute]int id,OrganizerDto organizerDto)
         {
             if (!ModelState.IsValid)
             {
@@ -86,7 +91,7 @@ namespace GerenciadorEventos.Controllers
                 return BadRequest(validationErrors);
             }
 
-            _organizerService.UpdateOrganizer(id,organizer);
+           var organizer = _organizerService.UpdateOrganizer(id,organizerDto);
 
             return Content($"{organizer}");
         }

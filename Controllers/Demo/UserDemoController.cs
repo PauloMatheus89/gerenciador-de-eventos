@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using GerenciadorEventos.Domain.Models.DTOs;
 using GerenciadorEventos.Interfaces.IService;
 using GerenciadorEventos.Models;
 using GerenciadorEventos.Models.Services;
@@ -25,7 +26,7 @@ namespace GerenciadorEventos.Controllers.Demo
         }
 
         [HttpPost("create-user")]
-        public IActionResult Create(User user)
+        public IActionResult Create(UserDto dto)
         {
             if (!ModelState.IsValid)
             {
@@ -42,13 +43,13 @@ namespace GerenciadorEventos.Controllers.Demo
                 return BadRequest(validationErrors);
             }
 
-            _userService.AddUser(user);
+           var user = _userService.AddUser(dto);
 
             return Content($"{user}");
         }
 
         [HttpDelete("remove-user")]
-        public IActionResult Remove(User user)
+        public IActionResult Remove(UserDto userDto)
         {
             if (!ModelState.IsValid)
             {
@@ -65,11 +66,11 @@ namespace GerenciadorEventos.Controllers.Demo
                 return BadRequest(validationErrors);
             }
 
-            _userService.RemoveUser(user);
-            return Content("The user was Sucefully Erased");
+            var user = _userService.RemoveUser(userDto);
+            return Content($"The user {user} was Sucefully Erased");
         }
 
-        [HttpGet("get-user-id")]
+        [HttpGet("get-user-id/{id}")]
         public IActionResult GetById(int id)
         {
             if (!ModelState.IsValid)
@@ -92,8 +93,8 @@ namespace GerenciadorEventos.Controllers.Demo
             return Content($"{user}");
         }
 
-        [HttpPut("update-user")]
-        public IActionResult Remove(int id, User user)
+        [HttpPut("update-user/{id}")]
+        public IActionResult UpdateUser([FromRoute]int id, UserDto userDto)
         {
             if (!ModelState.IsValid)
             {
@@ -110,7 +111,7 @@ namespace GerenciadorEventos.Controllers.Demo
                 return BadRequest(validationErrors);
             }
 
-            _userService.UpdateUser(id, user);
+            var user = _userService.UpdateUser(id, userDto);
             return Content($"Update User: {user}");
         }
 

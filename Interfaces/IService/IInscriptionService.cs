@@ -2,15 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GerenciadorEventos.Domain.Models.DTOs;
 using GerenciadorEventos.Models;
 
 namespace GerenciadorEventos.Interfaces.IService
 {
     public interface IInscriptionService
     {
-        void AddInscription(Inscription inscription);
-        void RemoveInscription(Inscription inscription);
-        void UpdateInscription(int id,Inscription inscription);
-        Inscription? GetById(int inscriptionId);
+        Task<Inscription> AddInscription(InscriptionDTO inscriptionDTO);
+        Task<Inscription> RemoveInscription(int id);
+        Task<Inscription> UpdateInscription(int id, InscriptionDTO inscriptionDTO);
+        Task<Inscription?> GetById(int inscriptionId);
+        Task<IEnumerable<Inscription>> GetAllInscriptions();
     }
 }

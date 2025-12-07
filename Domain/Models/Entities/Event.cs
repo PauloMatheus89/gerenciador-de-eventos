@@ -6,10 +6,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using GerenciadorEventos.CustomValidations;
 using GerenciadorEventos.Domain.Models.Entities;
+using GerenciadorEventos.Interfaces.IEntities;
 
 namespace GerenciadorEventos.Models
 {
-    public class Event
+    public class Event : IEntityWithOrganizer
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -18,11 +19,12 @@ namespace GerenciadorEventos.Models
         [StringLength(100, ErrorMessage = "Title is to Big")]
         public string? Title { get; set; }
         [Required]
-        [Range(0,float.MaxValue, ErrorMessage = "Value can't be less than 0")]
+        [Range(0, float.MaxValue, ErrorMessage = "Value can't be less than 0")]
         public float EntryFee { get; set; }
 
         public string? Description { get; set; }
 
+        //TODO Validação para verificar se a data inicio é depois data de hoje ou é data de hoje
         [Required]
         [DateRangeValidation("EndDate")]
         public DateTime StartingDate { get; set; }
@@ -48,6 +50,7 @@ namespace GerenciadorEventos.Models
         public Category Category { get; set; } = null!;
         public ICollection<Inscription> Inscriptions { get; set; } = new List<Inscription>();
         public ICollection<Day> Days { get; set; } = new List<Day>();
-        public ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
+        public List<EventFavorite> EventFavorites { get; set; } = new List<EventFavorite>();
+        //TODO Relacionar eventos com Favorites
     }
 }
